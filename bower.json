@@ -1,0 +1,21 @@
+{
+  "name": "Flextable",
+  "version": "0.1.0",
+  "authors": [
+    "harper yang <hipoyang@gmail.com>"
+  ],
+  "description": "a fixed header row table tool",
+  "keywords": [
+    "table",
+    "fixed"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/assets/vendor",
+    "test",
+    "tests"
+  ]
+}
