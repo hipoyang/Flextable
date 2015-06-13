@@ -1,6 +1,7 @@
 {
   "name": "Flextable",
   "version": "0.1.0",
+  "main": "Flextable.js",
   "authors": [
     "harper yang <hipoyang@gmail.com>"
   ],
