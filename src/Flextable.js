@@ -98,15 +98,27 @@
             var columns1 = tr1.cells,
                 columns2 = tr2.cells;
             for (var i = 0, len = columns2.length; i < len; i++) {
-                // columns1[i].setAttribute('width', columns2[i].offsetWidth + 'px');
-                // above all, we should get padding of counterpart column(required IE9+, mordern browser)
-                // property value include 'px' unit
-                var extraPadding = parseInt(window.getComputedStyle(columns2[i], null).getPropertyValue('padding-left')),
-                    padding = (columns2[i].offsetWidth - columns1[i].offsetWidth) / 2 + extraPadding;
-                columns1[i].style.paddingLeft = padding + 'px';
-                columns1[i].style.paddingRight = padding + 'px';
-                columns1[i].style.paddingTop = '10px';
-                columns1[i].style.paddingBottom = '10px';
+                var width1 = columns1[i].offsetWidth,
+                    width2 = columns2[i].offsetWidth;
+                // contents' width more than titles'
+                if (width2 > width1) {
+                    // columns1[i].setAttribute('width', columns2[i].offsetWidth + 'px');
+                    // above all, we should get padding of counterpart column(required IE9+, mordern browser)
+                    // property value include 'px' unit
+                    var extraPadding = parseInt(window.getComputedStyle(columns2[i], null).getPropertyValue('padding-left')),
+                        padding = (columns2[i].offsetWidth - columns1[i].offsetWidth) / 2 + extraPadding;
+                    columns1[i].style.paddingLeft = padding + 'px';
+                    columns1[i].style.paddingRight = padding + 'px';
+                    columns1[i].style.paddingTop = '10px';
+                    columns1[i].style.paddingBottom = '10px';
+                } else {  // vice versa
+                    var extraPadding = parseInt(window.getComputedStyle(columns1[i], null).getPropertyValue('padding-left')),
+                        padding = (columns1[i].offsetWidth - columns2[i].offsetWidth) / 2 + extraPadding;
+                    for (var j = 1, l = trlist.length; j < l; j++) {
+                        trlist[j].cells[i].style.paddingLeft = padding + 'px';
+                        trlist[j].cells[i].style.paddingRight = padding + 'px';
+                    }
+                }
             }
             // avoid header row covering first row
             this.table.style.marginTop = tr1.offsetHeight + 'px';
