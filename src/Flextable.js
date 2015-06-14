@@ -3,25 +3,100 @@
  * @author harper yang <hipoyang@gmail.com>
  */
 (function (window) {
-    
     // impose gobal object Flextable
     function Flextable(options) {
-        this.tableId = options['tableId'];
+        this.hideCol = options['hideCol'] ? true : false;
+        this.table = document.getElementById(options['tableId']);
+        this.checkboxList = [];
+        this.floatTH();
+        this.init();
+        window.Flextable = this;
     }
+    Flextable.prototype.init = function () {
+        this.table.className = 'flextable';
+        // init shoColumn module
+        if (this.hideCol) {
+            var trlist = this.table.rows,
+                tdNames = [],
+                toolbar = document.createElement('div'),
+                tip = document.createElement('header'),
+                // check all
+                checkAllBox = document.createElement('div'),
+                checkAll = document.createElement('input');
+            tip.innerHTML = '隐藏表格列：';
+            toolbar.className = 'col-toolbar';
+            toolbar.appendChild(tip);
+            checkAll.type = 'checkbox';
+            checkAll.id = 'checkAll';
+            checkAllBox.appendChild(checkAll);
+            checkAllBox.appendChild(document.createTextNode('全选'));
+            checkAllBox.className = 'check-all';
+            tip.appendChild(checkAllBox);
+            this.table.parentNode.appendChild(toolbar);
+
+            // check all event handler
+            checkAll.addEventListener('change', function(event) {
+                var flag = event.target.checked;
+                var checkboxList = window.Flextable.checkboxList;
+                for (var i = 0, len = checkboxList.length; i < len; i++) {
+                    checkboxList[i].checked = flag;
+                    window.Flextable.showColumn(checkboxList[i].getAttribute('data-col'), flag);
+                }
+            });
+
+            if (trlist.length > 0) {
+                // get column name
+                for (var i = 0, len = trlist[0].cells.length; i < len; i++) {
+                    tdNames.push(trlist[0].cells[i].innerHTML);
+                }
+            }
+            // create fields element
+            for (var i = 0, len = tdNames.length; i < len; i++) {
+                var checkbox = document.createElement('input'),
+                    label = document.createElement('label'),
+                    text = document.createTextNode(tdNames[i]);
+                checkbox.type = 'checkbox';
+                checkbox.setAttribute('data-col', i);
+                checkbox.addEventListener('change', function(event) {
+                    var col = event.target.getAttribute('data-col');
+                    window.Flextable.showColumn(col, event.target.checked);
+                })
+                label.appendChild(text);
+                label.insertBefore(checkbox, text);
+                toolbar.appendChild(label);
+                this.checkboxList.push(checkbox);
+            }
+        }
+        // init table viewport according to parentNode width
+        var parentWidth = this.table.parentNode.offsetWidth,
+            rows = this.table.rows;
+        if (rows.length > 1) {
+            for (var i = 0, len = rows[1].cells.length; i < len; i++) {
+                if (rows[1].cells[i].offsetWidth + rows[1].cells[i].offsetLeft > parentWidth) {
+                    for (var j = 0, l = rows.length; j < l; j++) {
+                        rows[j].cells[i].style.display = 'none';
+                    }
+                    // make current column checkbox checked
+                    for (var j = 0, l = this.checkboxList.length; j < l; j++) {
+                        if (this.checkboxList[j].getAttribute('data-col') == i) {
+                            this.checkboxList[j].checked = 'checked';
+                        }
+                    }
+                }
+            }
+        }
+    };
     // make title row float layout
     Flextable.prototype.floatTH = function () {
-        var table = document.getElementById(this.tableId),
-            trlist = table.tBodies[0].children;
+        var trlist = this.table.rows;
         if (trlist.length >= 2) { // table rows amount more than 2
             var tr1 = trlist[0],
                 tr2 = trlist[1];
             // setting first head row position: fixed
-            tr1.style.position = 'fixed';
-            tr1.style.top = '0';
-            tr1.style.background = '#FFF';
+            tr1.className = 'fixed-header';
             // setting header th width, acoording to columns width of first row 
-            var columns1 = tr1.children;
-                columns2 = tr2.children;
+            var columns1 = tr1.cells,
+                columns2 = tr2.cells;
             for (var i = 0, len = columns2.length; i < len; i++) {
                 // columns1[i].setAttribute('width', columns2[i].offsetWidth + 'px');
                 // above all, we should get padding of counterpart column(required IE9+, mordern browser)
@@ -34,11 +109,18 @@
                 columns1[i].style.paddingBottom = '10px';
             }
             // avoid header row covering first row
-            table.style.marginTop = tr1.offsetHeight + 'px';
+            this.table.style.marginTop = tr1.offsetHeight + 'px';
         }
     };
     // show or hide columns
-    Flextable.prototype.showColumn = function () {
+    Flextable.prototype.showColumn = function (col, flag) {
+        if (this.hideCol) {
+            var trlist = this.table.rows;
+            for (var i = 0, len = trlist.length; i < len; i++) {
+                flag ? trlist[i].cells[col].style.display = 'none'
+                        : trlist[i].cells[col].style.display = 'table-cell';
+            }
+        }
     }
     window.Flextable = Flextable;
 })(window);
