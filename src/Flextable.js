@@ -6,9 +6,10 @@
     // impose gobal object Flextable
     function Flextable(options) {
         this.hideCol = options['hideCol'] ? true : false;
+        this.fixedHeader = options['fixedHeader'] ? true : false;
         this.table = document.getElementById(options['tableId']);
         this.checkboxList = [];
-        this.floatTH();
+        this.fixedHeader && this.floatTH();
         this.init();
         window.Flextable = this;
     }

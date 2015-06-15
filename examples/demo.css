@@ -5,6 +5,9 @@ html,body{
 table {
     border-collapse: collapse;
 }
+tr:nth-of-type(even) {
+    background-color: #DFF0D8;
+}
 td, th {
     border: solid 1px #CCC;
     padding: 3px 10px;
