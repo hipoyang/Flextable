@@ -11,6 +11,7 @@
         this.checkboxList = [];
         this.fixedHeader && this.floatTH();
         this.init();
+        this.sortCells();
         window.Flextable = this;
     }
     Flextable.prototype.init = function () {
@@ -86,6 +87,8 @@
                 }
             }
         }
+        // fix toolbar covering the part of table
+        this.table.parentNode.style.paddingBottom = toolbar.offsetHeight + 10 + 'px';
     };
     // make title row float layout
     Flextable.prototype.floatTH = function () {
@@ -134,6 +137,63 @@
                         : trlist[i].cells[col].style.display = 'table-cell';
             }
         }
-    }
+    };
+    // column sort
+    Flextable.prototype.sortCells = function () {
+        if (this.table.rows.length > 0) {
+            var firstRow = this.table.rows[0];
+            for(var i = 0, len = firstRow.cells.length; i < len; i++) {
+                firstRow.cells[i].style.cursor = 'pointer';
+                firstRow.cells[i].setAttribute('data-col', i);
+                firstRow.cells[i].onclick = function (event) {
+                    var sendor = event.target,
+                        colNum = sendor.getAttribute('data-col'),
+                        colContent = sendor.innerHTML,
+                        curTable = window.Flextable.table,
+                        trList = new Array,
+                        count = 0;  // even stand for asc, odd stand for desc
+                    if (!sendor.getAttribute('data-count')) { 
+                        sendor.setAttribute('data-count', 0); 
+                    } else { 
+                        count = parseInt(sendor.getAttribute('data-count')); 
+                        count++; 
+                        sendor.setAttribute('data-count', count); 
+                    } 
+                    for (var j = 1, l = curTable.rows.length; j < l; j++) {
+                        trList[j - 1] = curTable.rows[j];
+                    } 
+                    if (count % 2 === 0) {
+                        for (var j = 0, l = trList.length; j < l; j++) {
+                            for (var k = j + 1, d = trList.length; k < d; k++) {
+                                if (trList[j].cells[colNum].innerHTML.localeCompare(trList[k].cells[colNum].innerHTML)) {
+                                    var tmpTr = trList[j];
+                                    trList[j] = trList[k];
+                                    trList[k] = tmpTr;
+                                }
+                            }
+                        }
+                    } else {
+                        for (var j = 0, l = trList.length; j < l; j++) {
+                            for (var k = j + 1, d = trList.length; k < d; k++) {
+                                if (trList[k].cells[colNum].innerHTML.localeCompare(trList[j].cells[colNum].innerHTML)) {
+                                    var tmpTr = trList[j];
+                                    trList[j] = trList[k];
+                                    trList[k] = tmpTr;
+                                }
+                            }
+                        }
+                    }
+                    var idx = 1;
+                    while(curTable.rows.length !== 1) {
+                        curTable.tBodies[0].removeChild(curTable.rows[idx]);
+                    }
+                    for (var j = 0, l = trList.length; j < l; j++) {
+                        console.log(trList[j]);
+                        curTable.tBodies[0].appendChild(trList[j]);
+                    } 
+                }
+            }
+        }
+    };
     window.Flextable = Flextable;
 })(window);
