@@ -1,8 +1,9 @@
 ##Flextable
 Flextable is a flexible table library.
 ##Introduction
-* the first row fixed;
-* hide or show special columns;
+* the first row fixed
+* hide or show special columns
+* sort according to column header
 
 ##Usage
 You can use `bower install` command install the library.

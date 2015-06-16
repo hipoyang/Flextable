@@ -7,11 +7,12 @@
     function Flextable(options) {
         this.hideCol = options['hideCol'] ? true : false;
         this.fixedHeader = options['fixedHeader'] ? true : false;
+        this.sort = options['sort'] ? true : false;
         this.table = document.getElementById(options['tableId']);
         this.checkboxList = [];
         this.fixedHeader && this.floatTH();
         this.init();
-        this.sortCells();
+        this.sort && this.sortCells();
         window.Flextable = this;
     }
     Flextable.prototype.init = function () {
@@ -165,7 +166,7 @@
                     if (count % 2 === 0) {
                         for (var j = 0, l = trList.length; j < l; j++) {
                             for (var k = j + 1, d = trList.length; k < d; k++) {
-                                if (trList[j].cells[colNum].innerHTML.localeCompare(trList[k].cells[colNum].innerHTML)) {
+                                if (trList[j].cells[colNum].innerHTML.localeCompare(trList[k].cells[colNum].innerHTML) < 0) {
                                     var tmpTr = trList[j];
                                     trList[j] = trList[k];
                                     trList[k] = tmpTr;
@@ -175,7 +176,7 @@
                     } else {
                         for (var j = 0, l = trList.length; j < l; j++) {
                             for (var k = j + 1, d = trList.length; k < d; k++) {
-                                if (trList[k].cells[colNum].innerHTML.localeCompare(trList[j].cells[colNum].innerHTML)) {
+                                if (trList[k].cells[colNum].innerHTML.localeCompare(trList[j].cells[colNum].innerHTML) < 0) {
                                     var tmpTr = trList[j];
                                     trList[j] = trList[k];
                                     trList[k] = tmpTr;
@@ -188,7 +189,6 @@
                         curTable.tBodies[0].removeChild(curTable.rows[idx]);
                     }
                     for (var j = 0, l = trList.length; j < l; j++) {
-                        console.log(trList[j]);
                         curTable.tBodies[0].appendChild(trList[j]);
                     } 
                 }
