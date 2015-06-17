@@ -8,6 +8,8 @@
         this.hideCol = options['hideCol'] ? true : false;
         this.fixedHeader = options['fixedHeader'] ? true : false;
         this.sort = options['sort'] ? true : false;
+        // auto: table viewport self-adapted
+        this.viewport = options['viewport'] === 'auto' ? 'auto' : 'static';
         this.table = document.getElementById(options['tableId']);
         this.checkboxList = [];
         this.fixedHeader && this.floatTH();
@@ -71,18 +73,20 @@
             }
         }
         // init table viewport according to parentNode width
-        var parentWidth = this.table.parentNode.offsetWidth,
-            rows = this.table.rows;
-        if (rows.length > 1) {
-            for (var i = 0, len = rows[1].cells.length; i < len; i++) {
-                if (rows[1].cells[i].offsetWidth + rows[1].cells[i].offsetLeft > parentWidth) {
-                    for (var j = 0, l = rows.length; j < l; j++) {
-                        rows[j].cells[i].style.display = 'none';
-                    }
-                    // make current column checkbox checked
-                    for (var j = 0, l = this.checkboxList.length; j < l; j++) {
-                        if (this.checkboxList[j].getAttribute('data-col') == i) {
-                            this.checkboxList[j].checked = 'checked';
+        if (this.viewport === 'auto') {
+            var parentWidth = this.table.parentNode.offsetWidth,
+                rows = this.table.rows;
+            if (rows.length > 1) {
+                for (var i = 0, len = rows[1].cells.length; i < len; i++) {
+                    if (rows[1].cells[i].offsetWidth + rows[1].cells[i].offsetLeft > parentWidth) {
+                        for (var j = 0, l = rows.length; j < l; j++) {
+                            rows[j].cells[i].style.display = 'none';
+                        }
+                        // make current column checkbox checked
+                        for (var j = 0, l = this.checkboxList.length; j < l; j++) {
+                            if (this.checkboxList[j].getAttribute('data-col') == i) {
+                                this.checkboxList[j].checked = 'checked';
+                            }
                         }
                     }
                 }
